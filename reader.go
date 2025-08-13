@@ -45,15 +45,22 @@ func Decode(r io.Reader) (image.Image, error) {
 
 	img := image.NewGray(image.Rect(0, 0, width, height))
 
-	for i := 0; i < width*height; i++ {
-		byteIndex := i / 8
-		bitIndex := uint(i % 8)
+	bytesPerRow := (width + 7) / 8
+	byteIndex := 0
 
-		if byteIndex < len(hexBytes) {
-			if (hexBytes[byteIndex] & (1 << bitIndex)) == 0 {
-				img.Pix[i] = 255
+	for y := range height {
+		for x := range width {
+			b := hexBytes[byteIndex+x/8]
+			bit := (b >> uint(x%8)) & 1
+
+			if bit == 0 {
+				img.SetGray(x, y, color.Gray{Y: 255})
+			} else {
+				img.SetGray(x, y, color.Gray{Y: 0})
 			}
 		}
+
+		byteIndex += bytesPerRow
 	}
 
 	return img, nil
