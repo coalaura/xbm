@@ -3,6 +3,7 @@ package xbm
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"io"
 	"strings"
 )
@@ -48,18 +49,17 @@ func Encode(w io.Writer, m image.Image, opts ...XBMOptions) error {
 
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
-			r, g, b, a := m.At(x, y).RGBA()
+			gray := color.GrayModel.Convert(m.At(x, y)).(color.Gray)
 
-			on := a > 0 && (r|g|b) > 0
-			if on {
-				byteVal |= 1 << bitCount
+			if gray.Y < 128 {
+				byteVal |= (1 << bitCount)
 			}
 
 			bitCount++
 			pixelCount++
 
 			if bitCount == 8 {
-				if err := writeHexByte(w, byteVal, pixelCount == width*height); err != nil {
+				if _, err := fmt.Fprintf(w, "0x%02x,", byteVal); err != nil {
 					return err
 				}
 
@@ -67,11 +67,14 @@ func Encode(w io.Writer, m image.Image, opts ...XBMOptions) error {
 				bitCount = 0
 			}
 		}
-	}
 
-	if bitCount > 0 {
-		if err := writeHexByte(w, byteVal, true); err != nil {
-			return err
+		if bitCount > 0 {
+			if _, err := fmt.Fprintf(w, "0x%02x,", byteVal); err != nil {
+				return err
+			}
+
+			byteVal = 0
+			bitCount = 0
 		}
 	}
 
@@ -80,18 +83,6 @@ func Encode(w io.Writer, m image.Image, opts ...XBMOptions) error {
 	}
 
 	return nil
-}
-
-func writeHexByte(w io.Writer, b byte, last bool) error {
-	if last {
-		_, err := fmt.Fprintf(w, " 0x%02x\n", b)
-
-		return err
-	}
-
-	_, err := fmt.Fprintf(w, " 0x%02x,", b)
-
-	return err
 }
 
 func sanitizeName(s string) string {

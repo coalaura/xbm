@@ -11,7 +11,7 @@ import (
 const (
 	expectedWidth  = 206
 	expectedHeight = 187
-	expectedHash   = "2dbcb3147868abd84c65169e59757a2995e6d3b079aaaffabbbcf8b8de7772fc"
+	expectedHash   = "e46b5718e44f2736d7d269e9c616128faa15558a302ea0a380f2eb1c2e64b8e7"
 )
 
 func Test_DecodeConfig(t *testing.T) {
