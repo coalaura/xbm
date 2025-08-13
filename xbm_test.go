@@ -8,6 +8,12 @@ import (
 	"testing"
 )
 
+const (
+	expectedWidth  = 206
+	expectedHeight = 187
+	expectedHash   = "2dbcb3147868abd84c65169e59757a2995e6d3b079aaaffabbbcf8b8de7772fc"
+)
+
 func Test_DecodeConfig(t *testing.T) {
 	file, err := os.OpenFile("image.xbm", os.O_RDONLY, 0)
 	if err != nil {
@@ -21,12 +27,12 @@ func Test_DecodeConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if info.Width != 800 {
-		t.Fatalf("expected width of 800px got: %d", info.Width)
+	if info.Width != expectedWidth {
+		t.Fatalf("expected width of %dpx got: %d", expectedWidth, info.Width)
 	}
 
-	if info.Height != 500 {
-		t.Fatalf("expected height of 500px got: %d", info.Height)
+	if info.Height != expectedHeight {
+		t.Fatalf("expected height of %dpx got: %d", expectedHeight, info.Height)
 	}
 }
 
@@ -45,12 +51,12 @@ func Test_Decode(t *testing.T) {
 
 	bounds := img.Bounds()
 
-	if bounds.Dx() != 800 {
-		t.Fatalf("expected width of 800px got: %d", bounds.Dx())
+	if bounds.Dx() != expectedWidth {
+		t.Fatalf("expected width of %dpx got: %d", expectedWidth, bounds.Dx())
 	}
 
-	if bounds.Dy() != 500 {
-		t.Fatalf("expected height of 500px got: %d", bounds.Dy())
+	if bounds.Dy() != expectedHeight {
+		t.Fatalf("expected height of %dpx got: %d", expectedHeight, bounds.Dy())
 	}
 }
 
@@ -77,7 +83,7 @@ func Test_Encode(t *testing.T) {
 	}
 
 	hexHash := hex.EncodeToString(hash.Sum(nil))
-	if hexHash != "a75f42d70168657910597e294501338018a36846e55f8355c88f5e0f49b5348e" {
-		t.Fatalf("hash mismatch: %s != a75f42d70168657910597e294501338018a36846e55f8355c88f5e0f49b5348e", hexHash)
+	if hexHash != expectedHash {
+		t.Fatalf("hash mismatch: %s != %s", hexHash, expectedHash)
 	}
 }

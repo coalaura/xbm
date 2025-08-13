@@ -93,10 +93,12 @@ func extractHexBytes(data []byte) []byte {
 		return nil
 	}
 
-	fields := bytes.Fields(data[start+1 : end])
+	fields := bytes.Split(data[start+1:end], []byte(","))
 	out := make([]byte, 0, len(fields))
 
 	for _, f := range fields {
+		f = bytes.TrimSpace(f)
+
 		if len(f) > 2 && (f[0:2][0] == '0' && (f[1] == 'x' || f[1] == 'X')) {
 			if v, err := strconv.ParseUint(string(f), 0, 8); err == nil {
 				out = append(out, byte(v))
