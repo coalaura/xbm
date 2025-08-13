@@ -50,7 +50,7 @@ func Decode(r io.Reader) (image.Image, error) {
 		bitIndex := uint(i % 8)
 
 		if byteIndex < len(hexBytes) {
-			if (hexBytes[byteIndex] & (1 << bitIndex)) != 0 {
+			if (hexBytes[byteIndex] & (1 << bitIndex)) == 0 {
 				img.Pix[i] = 255
 			}
 		}
